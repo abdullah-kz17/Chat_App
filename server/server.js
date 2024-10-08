@@ -1,9 +1,9 @@
+// server.js
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
-const socketIo = require("socket.io");
 const chatRoutes = require("./routes/chatRoutes");
 const cors = require("cors");
 const http = require("http");
@@ -36,16 +36,13 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 6000;
-
 const server = http.createServer(app);
-const io = socketIo(server, {
+const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000", // Your frontend URL
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
-
-app.use(express.json());
 
 io.on("connection", (socket) => {
   console.log("New client connected");
@@ -68,4 +65,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

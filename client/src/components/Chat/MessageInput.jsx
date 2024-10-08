@@ -15,7 +15,7 @@ const MessageInput = ({ chatId, senderId }) => {
         sender: { _id: senderId },
       };
       sendMessageClient(newMessage);
-      setMessage(""); // Clear the input
+      setMessage("");
     }
   };
 

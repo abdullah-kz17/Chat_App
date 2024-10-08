@@ -9,7 +9,7 @@ import {
   disconnectSocket,
 } from "../../services/socket";
 
-const ChatWindow = ({ chat, style, userId }) => {
+const ChatWindow = ({ chat, userId }) => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -25,8 +25,8 @@ const ChatWindow = ({ chat, style, userId }) => {
 
   return (
     <Card
-      title={chat.chatName}
-      style={{ ...style, display: "flex", flexDirection: "column" }}
+      title={chat?.chatName}
+      style={{ display: "flex", flexDirection: "column", height: "100%" }}
     >
       <MessageList messages={messages} style={{ flex: 1, overflowY: "auto" }} />
       <MessageInput chatId={chat._id} senderId={userId} />

@@ -1,7 +1,7 @@
 // src/services/socket.js
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000"; // your backend URL
+const SOCKET_URL = "http://localhost:5000";
 let socket;
 
 export const initiateSocket = (userId) => {
@@ -15,7 +15,7 @@ export const subscribeToChat = (chatId, cb) => {
   socket.emit("join chat", chatId);
   socket.on("message received", (message) => {
     console.log("New message received:", message);
-    return cb(message);
+    cb(message);
   });
 };
 
