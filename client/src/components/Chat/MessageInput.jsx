@@ -4,17 +4,17 @@ import { Input, Button } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 import { sendMessageClient } from "../../services/socket";
 
-const MessageInput = ({ chatId, senderId }) => {
+const MessageInput = ({ chatId, senderId, users }) => {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
     if (message.trim()) {
       const newMessage = {
         content: message,
-        chat: { _id: chatId },
+        chat: { _id: chatId, users }, // Include users
         sender: { _id: senderId },
       };
-      sendMessageClient(newMessage);
+      sendMessageClient(newMessage); // Send to WebSocket
       setMessage("");
     }
   };

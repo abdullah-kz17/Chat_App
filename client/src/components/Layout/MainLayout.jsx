@@ -7,7 +7,6 @@ import {
 } from "@ant-design/icons";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useContext } from "react";
-// import UserList from "../UserList/UserList";
 import ChatList from "../Chat/ChatList";
 import ChatWindow from "../Chat/ChatWindow";
 
@@ -42,7 +41,12 @@ const MainLayout = () => {
             <ChatList onChatSelect={setSelectedChat} />
           </div>
           {selectedChat ? (
-            <ChatWindow chat={selectedChat} style={{ flex: 1 }} />
+            <ChatWindow
+              chat={selectedChat}
+              userId={user._id}
+              currentUser={user} // Pass current user info here
+              style={{ flex: 1 }}
+            />
           ) : (
             <div
               style={{

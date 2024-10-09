@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
@@ -8,6 +7,7 @@ const chatRoutes = require("./routes/chatRoutes");
 const cors = require("cors");
 const http = require("http");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const socketIo = require("socket.io"); // Update import
 
 dotenv.config();
 connectDB();
@@ -15,7 +15,7 @@ const app = express();
 
 const corsOptions = {
   origin: "http://localhost:5173",
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "PUT", "DELETE"], // Updated methods
   credentials: true,
   allowedHeaders: [
     "Origin",
@@ -25,7 +25,6 @@ const corsOptions = {
   ],
 };
 app.use(cors(corsOptions));
-
 app.use(express.json()); // to accept JSON data
 
 app.use("/api/user", userRoutes);
@@ -37,7 +36,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 6000;
 const server = http.createServer(app);
-const io = require("socket.io")(server, {
+const io = socketIo(server, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"],
@@ -47,21 +46,30 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   console.log("New client connected");
 
+  // Joining a chat room
   socket.on("join chat", (chatId) => {
-    socket.join(chatId);
-    console.log("User joined chat: ", chatId);
+    if (chatId) {
+      socket.join(chatId);
+      console.log("User joined chat: ", chatId);
+    } else {
+      console.log("No chatId provided");
+    }
   });
 
+  // Handling new messages
   socket.on("new message", (newMessage) => {
-    const chat = newMessage.chat;
-    if (!chat.users) return console.log("Chat.users not defined");
-
-    chat.users.forEach((user) => {
-      if (user._id === newMessage.sender._id) return;
-      socket.to(user._id).emit("message received", newMessage);
-    });
+    try {
+      const chat = newMessage.chat;
+      if (!chat || !chat.users) {
+        return console.log("Chat or chat users not defined");
+      }
+      io.to(chat._id).emit("message received", newMessage);
+    } catch (error) {
+      console.error("Error in message broadcast:", error.message);
+    }
   });
 
+  // Handling disconnection
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
